@@ -376,14 +376,6 @@ class PhotoViewCoreState extends State<PhotoViewCore>
             fit: BoxFit.contain,
           ),
         ),
-        Positioned(
-            top: 0,
-            left: sliderPosition * scaleBoundaries.childSize.width,
-            bottom: 0,
-            child: Container(
-              color: Colors.white70,
-              width: 1 / scale,
-            ))
       ],
     );
   }
