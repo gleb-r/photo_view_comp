@@ -40,30 +40,17 @@ class _CommonExampleRouteWrapperState extends State<CommonExampleRouteWrapper> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(
-        children: [
-          Expanded(
-            child: TwinPhotoView(
-              firstImageProvider: widget.firstImageProvider,
-              secondImageProvider: widget.secondImageProvider,
-              minScale: widget.minScale,
-              maxScale: widget.maxScale,
-              initialScale: widget.initialScale,
-              basePosition: widget.basePosition,
-              filterQuality: widget.filterQuality,
-              disableGestures: widget.disableGestures,
-              errorBuilder: widget.errorBuilder,
-              slidePosition: position,
-            ),
-          ),
-          Slider(
-              min: 0.05,
-              max: 0.95,
-              value: position,
-              onChanged: (value) => setState(() {
-                position = value;
-              })),
-        ],
+      body: TwinPhotoView(
+        firstImageProvider: widget.firstImageProvider,
+        secondImageProvider: widget.secondImageProvider,
+        minScale: widget.minScale,
+        maxScale: widget.maxScale,
+        initialScale: widget.initialScale,
+        basePosition: widget.basePosition,
+        filterQuality: widget.filterQuality,
+        disableGestures: widget.disableGestures,
+        errorBuilder: widget.errorBuilder,
+        thumbOffset: 0.7,
       ),
     );
   }

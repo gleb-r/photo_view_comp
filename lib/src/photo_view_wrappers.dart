@@ -34,6 +34,8 @@ class ImageWrapper extends StatefulWidget {
     required this.errorBuilder,
     required this.enablePanAlways,
     required this.slidePosition,
+    required this.dividerThickness,
+    required this.dividerColor,
   }) : super(key: key);
 
   final ImageProvider firstImageProvider;
@@ -62,6 +64,8 @@ class ImageWrapper extends StatefulWidget {
   final bool? disableGestures;
   final bool? enablePanAlways;
   final double slidePosition;
+  final Color dividerColor;
+  final double dividerThickness;
 
   @override
   _ImageWrapperState createState() => _ImageWrapperState();
@@ -204,6 +208,8 @@ class _ImageWrapperState extends State<ImageWrapper> {
       disableGestures: widget.disableGestures ?? false,
       enablePanAlways: widget.enablePanAlways ?? false,
       slidePosition: widget.slidePosition,
+      dividerColor: widget.dividerColor,
+      dividerThickness: widget.dividerThickness,
     );
   }
 

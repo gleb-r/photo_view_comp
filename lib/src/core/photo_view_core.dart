@@ -43,6 +43,8 @@ class PhotoViewCore extends StatefulWidget {
     required this.disableGestures,
     required this.enablePanAlways,
     required this.slidePosition,
+    required this.dividerColor,
+    required this.dividerThickness,
   }) : super(key: key);
 
   final Decoration? backgroundDecoration;
@@ -68,8 +70,11 @@ class PhotoViewCore extends StatefulWidget {
   final bool disableGestures;
   final bool enablePanAlways;
   final double slidePosition;
-
   final FilterQuality filterQuality;
+
+  final Color dividerColor;
+
+  final double dividerThickness;
 
   @override
   State<StatefulWidget> createState() {
@@ -380,8 +385,8 @@ class PhotoViewCoreState extends State<PhotoViewCore>
             left: sliderPosition * scaleBoundaries.childSize.width,
             bottom: 0,
             child: Container(
-              color: Colors.white70,
-              width: 1.5 / scale,
+              color: widget.dividerColor,
+              width: widget.dividerThickness / scale,
             ))
       ],
     );

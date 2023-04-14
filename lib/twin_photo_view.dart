@@ -237,6 +237,7 @@ class TwinPhotoView extends StatefulWidget {
     Key? key,
     required this.firstImageProvider,
     required this.secondImageProvider,
+    required this.thumbOffset,
     this.loadingBuilder,
     this.backgroundDecoration,
     this.wantKeepAlive = false,
@@ -261,7 +262,9 @@ class TwinPhotoView extends StatefulWidget {
     this.disableGestures,
     this.errorBuilder,
     this.enablePanAlways,
-    this.slidePosition,
+    this.dividerColor,
+    this.dividerThickness,
+    this.thumbColor,
   }) : super(key: key);
 
   /// Given a [imageProvider] it resolves into an zoomable image widget using. It
@@ -361,7 +364,13 @@ class TwinPhotoView extends StatefulWidget {
   /// Useful when you want to drag a widget without restrictions.
   final bool? enablePanAlways;
 
-  final double? slidePosition;
+  final Color? thumbColor;
+
+  final Color? dividerColor;
+
+  final double? dividerThickness;
+
+  final double thumbOffset;
 
   @override
   State<StatefulWidget> createState() {
@@ -378,6 +387,8 @@ class _TwinPhotoViewState extends State<TwinPhotoView>
   late PhotoViewControllerBase _controller;
   late bool _controlledScaleStateController;
   late PhotoViewScaleStateController _scaleStateController;
+
+  double slidePosition = 0.5;
 
   @override
   void initState() {
@@ -451,33 +462,54 @@ class _TwinPhotoViewState extends State<TwinPhotoView>
         final computedOuterSize = widget.customSize ?? constraints.biggest;
         final backgroundDecoration = widget.backgroundDecoration ??
             const BoxDecoration(color: Colors.black);
-        return ImageWrapper(
-          firstImageProvider: widget.firstImageProvider!,
-          secondImageProvider: widget.secondImageProvider!,
-          loadingBuilder: widget.loadingBuilder,
-          backgroundDecoration: backgroundDecoration,
-          semanticLabel: widget.semanticLabel,
-          gaplessPlayback: widget.gaplessPlayback,
-          scaleStateChangedCallback: widget.scaleStateChangedCallback,
-          enableRotation: widget.enableRotation,
-          controller: _controller,
-          scaleStateController: _scaleStateController,
-          maxScale: widget.maxScale,
-          minScale: widget.minScale,
-          initialScale: widget.initialScale,
-          basePosition: widget.basePosition,
-          scaleStateCycle: widget.scaleStateCycle,
-          onTapUp: widget.onTapUp,
-          onTapDown: widget.onTapDown,
-          onScaleEnd: widget.onScaleEnd,
-          outerSize: computedOuterSize,
-          gestureDetectorBehavior: widget.gestureDetectorBehavior,
-          tightMode: widget.tightMode,
-          filterQuality: widget.filterQuality,
-          disableGestures: widget.disableGestures,
-          errorBuilder: widget.errorBuilder,
-          enablePanAlways: widget.enablePanAlways,
-          slidePosition: widget.slidePosition ?? 0.5,
+        return Stack(
+          children: [
+            ImageWrapper(
+              firstImageProvider: widget.firstImageProvider!,
+              secondImageProvider: widget.secondImageProvider!,
+              loadingBuilder: widget.loadingBuilder,
+              backgroundDecoration: backgroundDecoration,
+              semanticLabel: widget.semanticLabel,
+              gaplessPlayback: widget.gaplessPlayback,
+              scaleStateChangedCallback: widget.scaleStateChangedCallback,
+              enableRotation: widget.enableRotation,
+              controller: _controller,
+              scaleStateController: _scaleStateController,
+              maxScale: widget.maxScale,
+              minScale: widget.minScale,
+              initialScale: widget.initialScale,
+              basePosition: widget.basePosition,
+              scaleStateCycle: widget.scaleStateCycle,
+              onTapUp: widget.onTapUp,
+              onTapDown: widget.onTapDown,
+              onScaleEnd: widget.onScaleEnd,
+              outerSize: computedOuterSize,
+              gestureDetectorBehavior: widget.gestureDetectorBehavior,
+              tightMode: widget.tightMode,
+              filterQuality: widget.filterQuality,
+              disableGestures: widget.disableGestures,
+              errorBuilder: widget.errorBuilder,
+              enablePanAlways: widget.enablePanAlways,
+              slidePosition: slidePosition,
+              dividerThickness: widget.dividerThickness ?? 1.5,
+              dividerColor: widget.dividerColor ?? Colors.white70,
+            ),
+            Positioned(
+              top: computedOuterSize.height * widget.thumbOffset,
+              left: 0,
+              right: 0,
+              child: Slider(
+                  activeColor: Colors.transparent,
+                  inactiveColor: Colors.transparent,
+                  thumbColor: widget.thumbColor ?? Colors.white,
+                  min: 0.063,
+                  max: 0.937,
+                  value: slidePosition,
+                  onChanged: (value) => setState(() {
+                        slidePosition = value;
+                      })),
+            )
+          ],
         );
       },
     );
