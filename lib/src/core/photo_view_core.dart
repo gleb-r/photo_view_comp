@@ -271,8 +271,7 @@ class PhotoViewCoreState extends State<PhotoViewCore>
       markNeedsScaleRecalc = true;
       cachedScaleBoundaries = widget.scaleBoundaries;
     }
-    final screenWidth =
-        MediaQuery.of(context).size.width; // TODO: from parent constr
+    final screenWidth = widget.scaleBoundaries.outerSize.width;
 
     return StreamBuilder(
         stream: controller.outputStateStream,
