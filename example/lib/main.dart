@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:photo_view/photo_view.dart';
-import 'package:photo_view_example/screens/common/common_example_wrapper.dart';
+import 'package:twin_photo_view/twin_photo_view.dart';
+import 'package:twin_photo_view_example/screens/common/common_example_wrapper.dart';
 
 void main() => runApp(MyApp());
 

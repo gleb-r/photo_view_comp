@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:photo_view/photo_view.dart';
+import 'package:twin_photo_view/twin_photo_view.dart';
 
 class CommonExampleRouteWrapper extends StatefulWidget {
   const CommonExampleRouteWrapper({
@@ -43,7 +43,7 @@ class _CommonExampleRouteWrapperState extends State<CommonExampleRouteWrapper> {
       body: Column(
         children: [
           Expanded(
-            child: PhotoView(
+            child: TwinPhotoView(
               firstImageProvider: widget.firstImageProvider,
               secondImageProvider: widget.secondImageProvider,
               minScale: widget.minScale,
@@ -57,6 +57,8 @@ class _CommonExampleRouteWrapperState extends State<CommonExampleRouteWrapper> {
             ),
           ),
           Slider(
+            min: 0.05,
+              max: 0.95,
               value: position,
               onChanged: (value) => setState(() {
                     position = value;

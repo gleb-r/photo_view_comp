@@ -1,14 +1,12 @@
-library photo_view;
+library twin_photo_view;
 
 import 'package:flutter/material.dart';
 
-import 'package:photo_view/src/controller/photo_view_controller.dart';
-import 'package:photo_view/src/controller/photo_view_scalestate_controller.dart';
-import 'package:photo_view/src/core/photo_view_core.dart';
-import 'package:photo_view/src/photo_view_computed_scale.dart';
-import 'package:photo_view/src/photo_view_scale_state.dart';
-import 'package:photo_view/src/photo_view_wrappers.dart';
-import 'package:photo_view/src/utils/photo_view_hero_attributes.dart';
+import 'package:twin_photo_view/src/controller/photo_view_controller.dart';
+import 'package:twin_photo_view/src/controller/photo_view_scalestate_controller.dart';
+import 'package:twin_photo_view/src/photo_view_computed_scale.dart';
+import 'package:twin_photo_view/src/photo_view_scale_state.dart';
+import 'package:twin_photo_view/src/photo_view_wrappers.dart';
 
 export 'src/controller/photo_view_controller.dart';
 export 'src/controller/photo_view_scalestate_controller.dart';
@@ -227,14 +225,14 @@ export 'src/utils/photo_view_hero_attributes.dart';
 /// }
 /// ```
 ///
-class PhotoView extends StatefulWidget {
+class TwinPhotoView extends StatefulWidget {
   /// Creates a widget that displays a zoomable image.
   ///
   /// To show an image from the network or from an asset bundle, use their respective
   /// image providers, ie: [AssetImage] or [NetworkImage]
   ///
   /// Internally, the image is rendered within an [Image] widget.
-  PhotoView({
+  TwinPhotoView({
     Key? key,
     required this.firstImageProvider,
     required this.secondImageProvider,
@@ -270,7 +268,7 @@ class PhotoView extends StatefulWidget {
   final ImageProvider? firstImageProvider;
   final ImageProvider? secondImageProvider;
 
-  /// While [imageProvider] is not resolved, [loadingBuilder] is called by [PhotoView]
+  /// While [imageProvider] is not resolved, [loadingBuilder] is called by [TwinPhotoView]
   /// into the screen, by default it is a centered [CircularProgressIndicator]
   final LoadingBuilder? loadingBuilder;
 
@@ -295,7 +293,7 @@ class PhotoView extends StatefulWidget {
   /// to `false`.
   final bool gaplessPlayback;
 
-  /// Defines the size of the scaling base of the image inside [PhotoView],
+  /// Defines the size of the scaling base of the image inside [TwinPhotoView],
   /// by default it is `MediaQuery.of(context).size`.
   final Size? customSize;
 
@@ -366,11 +364,11 @@ class PhotoView extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _PhotoViewState();
+    return _TwinPhotoViewState();
   }
 }
 
-class _PhotoViewState extends State<PhotoView>
+class _TwinPhotoViewState extends State<TwinPhotoView>
     with AutomaticKeepAliveClientMixin {
   // image retrieval
 
@@ -404,7 +402,7 @@ class _PhotoViewState extends State<PhotoView>
   }
 
   @override
-  void didUpdateWidget(PhotoView oldWidget) {
+  void didUpdateWidget(TwinPhotoView oldWidget) {
     if (widget.controller == null) {
       if (!_controlledController) {
         _controlledController = true;
@@ -507,7 +505,7 @@ PhotoViewScaleState defaultScaleStateCycle(PhotoViewScaleState actual) {
 
 /// A type definition for a [Function] that receives the actual [PhotoViewScaleState] and returns the next one
 /// It is used internally to walk in the "doubletap gesture cycle".
-/// It is passed to [PhotoView.scaleStateCycle]
+/// It is passed to [TwinPhotoView.scaleStateCycle]
 typedef ScaleStateCycle = PhotoViewScaleState Function(
   PhotoViewScaleState actual,
 );

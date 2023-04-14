@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-import 'package:photo_view/src/utils/ignorable_change_notifier.dart';
+import 'package:twin_photo_view/src/utils/ignorable_change_notifier.dart';
 
 /// The interface in which controllers will be implemented.
 ///

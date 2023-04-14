@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../photo_view.dart';
+import '../twin_photo_view.dart';
 import 'core/photo_view_core.dart';
 import 'photo_view_default_widgets.dart';
 import 'utils/photo_view_utils.dart';

@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:photo_view/photo_view.dart'
+import 'package:twin_photo_view/src/controller/photo_view_controller.dart';
+import 'package:twin_photo_view/src/controller/photo_view_controller_delegate.dart';
+import 'package:twin_photo_view/src/controller/photo_view_scalestate_controller.dart';
+import 'package:twin_photo_view/src/core/photo_view_gesture_detector.dart';
+import 'package:twin_photo_view/src/core/photo_view_hit_corners.dart';
+import 'package:twin_photo_view/src/utils/photo_view_utils.dart';
+import 'package:twin_photo_view/twin_photo_view.dart'
     show
         PhotoViewScaleState,
-        PhotoViewHeroAttributes,
         PhotoViewImageTapDownCallback,
         PhotoViewImageTapUpCallback,
         PhotoViewImageScaleEndCallback,
         ScaleStateCycle;
-import 'package:photo_view/src/controller/photo_view_controller.dart';
-import 'package:photo_view/src/controller/photo_view_controller_delegate.dart';
-import 'package:photo_view/src/controller/photo_view_scalestate_controller.dart';
-import 'package:photo_view/src/core/photo_view_gesture_detector.dart';
-import 'package:photo_view/src/core/photo_view_hit_corners.dart';
-import 'package:photo_view/src/utils/photo_view_utils.dart';
 
 const _defaultDecoration = const BoxDecoration(
   color: const Color.fromRGBO(0, 0, 0, 1.0),
@@ -272,7 +271,8 @@ class PhotoViewCoreState extends State<PhotoViewCore>
       markNeedsScaleRecalc = true;
       cachedScaleBoundaries = widget.scaleBoundaries;
     }
-    final screenWidth = MediaQuery.of(context).size.width; // TODO: from parent constr
+    final screenWidth =
+        MediaQuery.of(context).size.width; // TODO: from parent constr
 
     return StreamBuilder(
         stream: controller.outputStateStream,
@@ -376,6 +376,14 @@ class PhotoViewCoreState extends State<PhotoViewCore>
             fit: BoxFit.contain,
           ),
         ),
+        Positioned(
+            top: 0,
+            left: sliderPosition * scaleBoundaries.childSize.width,
+            bottom: 0,
+            child: Container(
+              color: Colors.white70,
+              width: 1 / scale,
+            ))
       ],
     );
   }
