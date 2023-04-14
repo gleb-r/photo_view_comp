@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
 
-class CommonExampleRouteWrapper extends StatelessWidget {
+class CommonExampleRouteWrapper extends StatefulWidget {
   const CommonExampleRouteWrapper({
-    this.imageProvider,
+    this.firstImageProvider,
+    this.secondImageProvider,
     this.loadingBuilder,
     this.backgroundDecoration,
     this.minScale,
@@ -15,7 +16,8 @@ class CommonExampleRouteWrapper extends StatelessWidget {
     this.errorBuilder,
   });
 
-  final ImageProvider? imageProvider;
+  final ImageProvider? firstImageProvider;
+  final ImageProvider? secondImageProvider;
   final LoadingBuilder? loadingBuilder;
   final BoxDecoration? backgroundDecoration;
   final dynamic minScale;
@@ -27,24 +29,39 @@ class CommonExampleRouteWrapper extends StatelessWidget {
   final ImageErrorWidgetBuilder? errorBuilder;
 
   @override
+  State<CommonExampleRouteWrapper> createState() =>
+      _CommonExampleRouteWrapperState();
+}
+
+class _CommonExampleRouteWrapperState extends State<CommonExampleRouteWrapper> {
+  double position = 0.5;
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        constraints: BoxConstraints.expand(
-          height: MediaQuery.of(context).size.height,
-        ),
-        child: PhotoView(
-          imageProvider: imageProvider,
-          loadingBuilder: loadingBuilder,
-          backgroundDecoration: backgroundDecoration,
-          minScale: minScale,
-          maxScale: maxScale,
-          initialScale: initialScale,
-          basePosition: basePosition,
-          filterQuality: filterQuality,
-          disableGestures: disableGestures,
-          errorBuilder: errorBuilder,
-        ),
+      backgroundColor: Colors.black,
+      body: Column(
+        children: [
+          Expanded(
+            child: PhotoView(
+              firstImageProvider: widget.firstImageProvider,
+              secondImageProvider: widget.secondImageProvider,
+              minScale: widget.minScale,
+              maxScale: widget.maxScale,
+              initialScale: widget.initialScale,
+              basePosition: widget.basePosition,
+              filterQuality: widget.filterQuality,
+              disableGestures: widget.disableGestures,
+              errorBuilder: widget.errorBuilder,
+              slidePosition: position,
+            ),
+          ),
+          Slider(
+              value: position,
+              onChanged: (value) => setState(() {
+                    position = value;
+                  })),
+        ],
       ),
     );
   }

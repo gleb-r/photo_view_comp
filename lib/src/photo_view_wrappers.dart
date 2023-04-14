@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 
 import '../photo_view.dart';
 import 'core/photo_view_core.dart';
@@ -8,12 +8,12 @@ import 'utils/photo_view_utils.dart';
 class ImageWrapper extends StatefulWidget {
   const ImageWrapper({
     Key? key,
-    required this.imageProvider,
+    required this.firstImageProvider,
+    required this.secondImageProvider,
     required this.loadingBuilder,
     required this.backgroundDecoration,
     required this.semanticLabel,
     required this.gaplessPlayback,
-    required this.heroAttributes,
     required this.scaleStateChangedCallback,
     required this.enableRotation,
     required this.controller,
@@ -33,15 +33,16 @@ class ImageWrapper extends StatefulWidget {
     required this.disableGestures,
     required this.errorBuilder,
     required this.enablePanAlways,
+    required this.slidePosition,
   }) : super(key: key);
 
-  final ImageProvider imageProvider;
+  final ImageProvider firstImageProvider;
+  final ImageProvider secondImageProvider;
   final LoadingBuilder? loadingBuilder;
   final ImageErrorWidgetBuilder? errorBuilder;
   final BoxDecoration backgroundDecoration;
   final String? semanticLabel;
   final bool gaplessPlayback;
-  final PhotoViewHeroAttributes? heroAttributes;
   final ValueChanged<PhotoViewScaleState>? scaleStateChangedCallback;
   final bool enableRotation;
   final dynamic maxScale;
@@ -60,6 +61,7 @@ class ImageWrapper extends StatefulWidget {
   final FilterQuality? filterQuality;
   final bool? disableGestures;
   final bool? enablePanAlways;
+  final double slidePosition;
 
   @override
   _ImageWrapperState createState() => _ImageWrapperState();
@@ -90,14 +92,14 @@ class _ImageWrapperState extends State<ImageWrapper> {
   @override
   void didUpdateWidget(ImageWrapper oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.imageProvider != oldWidget.imageProvider) {
+    if (widget.firstImageProvider != oldWidget.firstImageProvider) {
       _resolveImage();
     }
   }
 
   // retrieve image from the provider
   void _resolveImage() {
-    final ImageStream newStream = widget.imageProvider.resolve(
+    final ImageStream newStream = widget.firstImageProvider.resolve(
       const ImageConfiguration(),
     );
     _updateSourceStream(newStream);
@@ -182,12 +184,12 @@ class _ImageWrapperState extends State<ImageWrapper> {
     );
 
     return PhotoViewCore(
-      imageProvider: widget.imageProvider,
+      firstImageProvider: widget.firstImageProvider,
+      secondImageProvider: widget.secondImageProvider,
       backgroundDecoration: widget.backgroundDecoration,
       semanticLabel: widget.semanticLabel,
       gaplessPlayback: widget.gaplessPlayback,
       enableRotation: widget.enableRotation,
-      heroAttributes: widget.heroAttributes,
       basePosition: widget.basePosition ?? Alignment.center,
       controller: widget.controller,
       scaleStateController: widget.scaleStateController,
@@ -201,6 +203,7 @@ class _ImageWrapperState extends State<ImageWrapper> {
       filterQuality: widget.filterQuality ?? FilterQuality.none,
       disableGestures: widget.disableGestures ?? false,
       enablePanAlways: widget.enablePanAlways ?? false,
+      slidePosition: widget.slidePosition,
     );
   }
 
@@ -222,91 +225,6 @@ class _ImageWrapperState extends State<ImageWrapper> {
     }
     return PhotoViewDefaultError(
       decoration: widget.backgroundDecoration,
-    );
-  }
-}
-
-class CustomChildWrapper extends StatelessWidget {
-  const CustomChildWrapper({
-    Key? key,
-    this.child,
-    required this.childSize,
-    required this.backgroundDecoration,
-    this.heroAttributes,
-    this.scaleStateChangedCallback,
-    required this.enableRotation,
-    required this.controller,
-    required this.scaleStateController,
-    required this.maxScale,
-    required this.minScale,
-    required this.initialScale,
-    required this.basePosition,
-    required this.scaleStateCycle,
-    this.onTapUp,
-    this.onTapDown,
-    this.onScaleEnd,
-    required this.outerSize,
-    this.gestureDetectorBehavior,
-    required this.tightMode,
-    required this.filterQuality,
-    required this.disableGestures,
-    required this.enablePanAlways,
-  }) : super(key: key);
-
-  final Widget? child;
-  final Size? childSize;
-  final Decoration backgroundDecoration;
-  final PhotoViewHeroAttributes? heroAttributes;
-  final ValueChanged<PhotoViewScaleState>? scaleStateChangedCallback;
-  final bool enableRotation;
-
-  final PhotoViewControllerBase controller;
-  final PhotoViewScaleStateController scaleStateController;
-
-  final dynamic maxScale;
-  final dynamic minScale;
-  final dynamic initialScale;
-
-  final Alignment? basePosition;
-  final ScaleStateCycle? scaleStateCycle;
-  final PhotoViewImageTapUpCallback? onTapUp;
-  final PhotoViewImageTapDownCallback? onTapDown;
-  final PhotoViewImageScaleEndCallback? onScaleEnd;
-  final Size outerSize;
-  final HitTestBehavior? gestureDetectorBehavior;
-  final bool? tightMode;
-  final FilterQuality? filterQuality;
-  final bool? disableGestures;
-  final bool? enablePanAlways;
-
-  @override
-  Widget build(BuildContext context) {
-    final scaleBoundaries = ScaleBoundaries(
-      minScale ?? 0.0,
-      maxScale ?? double.infinity,
-      initialScale ?? PhotoViewComputedScale.contained,
-      outerSize,
-      childSize ?? outerSize,
-    );
-
-    return PhotoViewCore.customChild(
-      customChild: child,
-      backgroundDecoration: backgroundDecoration,
-      enableRotation: enableRotation,
-      heroAttributes: heroAttributes,
-      controller: controller,
-      scaleStateController: scaleStateController,
-      scaleStateCycle: scaleStateCycle ?? defaultScaleStateCycle,
-      basePosition: basePosition ?? Alignment.center,
-      scaleBoundaries: scaleBoundaries,
-      onTapUp: onTapUp,
-      onTapDown: onTapDown,
-      onScaleEnd: onScaleEnd,
-      gestureDetectorBehavior: gestureDetectorBehavior,
-      tightMode: tightMode ?? false,
-      filterQuality: filterQuality ?? FilterQuality.none,
-      disableGestures: disableGestures ?? false,
-      enablePanAlways: enablePanAlways ?? false,
     );
   }
 }

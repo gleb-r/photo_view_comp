@@ -236,13 +236,13 @@ class PhotoView extends StatefulWidget {
   /// Internally, the image is rendered within an [Image] widget.
   PhotoView({
     Key? key,
-    required this.imageProvider,
+    required this.firstImageProvider,
+    required this.secondImageProvider,
     this.loadingBuilder,
     this.backgroundDecoration,
     this.wantKeepAlive = false,
     this.semanticLabel,
     this.gaplessPlayback = false,
-    this.heroAttributes,
     this.scaleStateChangedCallback,
     this.enableRotation = false,
     this.controller,
@@ -262,51 +262,13 @@ class PhotoView extends StatefulWidget {
     this.disableGestures,
     this.errorBuilder,
     this.enablePanAlways,
-  })  : child = null,
-        childSize = null,
-        super(key: key);
-
-  /// Creates a widget that displays a zoomable child.
-  ///
-  /// It has been created to resemble [PhotoView] behavior within widgets that aren't an image, such as [Container], [Text] or a svg.
-  ///
-  /// Instead of a [imageProvider], this constructor will receive a [child] and a [childSize].
-  ///
-  PhotoView.customChild({
-    Key? key,
-    required this.child,
-    this.childSize,
-    this.backgroundDecoration,
-    this.wantKeepAlive = false,
-    this.heroAttributes,
-    this.scaleStateChangedCallback,
-    this.enableRotation = false,
-    this.controller,
-    this.scaleStateController,
-    this.maxScale,
-    this.minScale,
-    this.initialScale,
-    this.basePosition,
-    this.scaleStateCycle,
-    this.onTapUp,
-    this.onTapDown,
-    this.onScaleEnd,
-    this.customSize,
-    this.gestureDetectorBehavior,
-    this.tightMode,
-    this.filterQuality,
-    this.disableGestures,
-    this.enablePanAlways,
-  })  : errorBuilder = null,
-        imageProvider = null,
-        semanticLabel = null,
-        gaplessPlayback = false,
-        loadingBuilder = null,
-        super(key: key);
+    this.slidePosition,
+  }) : super(key: key);
 
   /// Given a [imageProvider] it resolves into an zoomable image widget using. It
   /// is required
-  final ImageProvider? imageProvider;
+  final ImageProvider? firstImageProvider;
+  final ImageProvider? secondImageProvider;
 
   /// While [imageProvider] is not resolved, [loadingBuilder] is called by [PhotoView]
   /// into the screen, by default it is a centered [CircularProgressIndicator]
@@ -333,10 +295,6 @@ class PhotoView extends StatefulWidget {
   /// to `false`.
   final bool gaplessPlayback;
 
-  /// Attributes that are going to be passed to [PhotoViewCore]'s
-  /// [Hero]. Leave this property undefined if you don't want a hero animation.
-  final PhotoViewHeroAttributes? heroAttributes;
-
   /// Defines the size of the scaling base of the image inside [PhotoView],
   /// by default it is `MediaQuery.of(context).size`.
   final Size? customSize;
@@ -346,12 +304,6 @@ class PhotoView extends StatefulWidget {
 
   /// A flag that enables the rotation gesture support
   final bool enableRotation;
-
-  /// The specified custom child to be shown instead of a image
-  final Widget? child;
-
-  /// The size of the custom [child]. [PhotoView] uses this value to compute the relation between the child and the container's size to calculate the scale value.
-  final Size? childSize;
 
   /// Defines the maximum size in which the image will be allowed to assume, it
   /// is proportional to the original image size. Can be either a double (absolute value) or a
@@ -410,9 +362,7 @@ class PhotoView extends StatefulWidget {
   /// Useful when you want to drag a widget without restrictions.
   final bool? enablePanAlways;
 
-  bool get _isCustomChild {
-    return child != null;
-  }
+  final double? slidePosition;
 
   @override
   State<StatefulWidget> createState() {
@@ -498,66 +448,38 @@ class _PhotoViewState extends State<PhotoView>
   Widget build(BuildContext context) {
     super.build(context);
     return LayoutBuilder(
-      builder: (
-        BuildContext context,
-        BoxConstraints constraints,
-      ) {
+      builder: (BuildContext context, BoxConstraints constraints) {
         final computedOuterSize = widget.customSize ?? constraints.biggest;
         final backgroundDecoration = widget.backgroundDecoration ??
             const BoxDecoration(color: Colors.black);
-
-        return widget._isCustomChild
-            ? CustomChildWrapper(
-                child: widget.child,
-                childSize: widget.childSize,
-                backgroundDecoration: backgroundDecoration,
-                heroAttributes: widget.heroAttributes,
-                scaleStateChangedCallback: widget.scaleStateChangedCallback,
-                enableRotation: widget.enableRotation,
-                controller: _controller,
-                scaleStateController: _scaleStateController,
-                maxScale: widget.maxScale,
-                minScale: widget.minScale,
-                initialScale: widget.initialScale,
-                basePosition: widget.basePosition,
-                scaleStateCycle: widget.scaleStateCycle,
-                onTapUp: widget.onTapUp,
-                onTapDown: widget.onTapDown,
-                onScaleEnd: widget.onScaleEnd,
-                outerSize: computedOuterSize,
-                gestureDetectorBehavior: widget.gestureDetectorBehavior,
-                tightMode: widget.tightMode,
-                filterQuality: widget.filterQuality,
-                disableGestures: widget.disableGestures,
-                enablePanAlways: widget.enablePanAlways,
-              )
-            : ImageWrapper(
-                imageProvider: widget.imageProvider!,
-                loadingBuilder: widget.loadingBuilder,
-                backgroundDecoration: backgroundDecoration,
-                semanticLabel: widget.semanticLabel,
-                gaplessPlayback: widget.gaplessPlayback,
-                heroAttributes: widget.heroAttributes,
-                scaleStateChangedCallback: widget.scaleStateChangedCallback,
-                enableRotation: widget.enableRotation,
-                controller: _controller,
-                scaleStateController: _scaleStateController,
-                maxScale: widget.maxScale,
-                minScale: widget.minScale,
-                initialScale: widget.initialScale,
-                basePosition: widget.basePosition,
-                scaleStateCycle: widget.scaleStateCycle,
-                onTapUp: widget.onTapUp,
-                onTapDown: widget.onTapDown,
-                onScaleEnd: widget.onScaleEnd,
-                outerSize: computedOuterSize,
-                gestureDetectorBehavior: widget.gestureDetectorBehavior,
-                tightMode: widget.tightMode,
-                filterQuality: widget.filterQuality,
-                disableGestures: widget.disableGestures,
-                errorBuilder: widget.errorBuilder,
-                enablePanAlways: widget.enablePanAlways,
-              );
+        return ImageWrapper(
+          firstImageProvider: widget.firstImageProvider!,
+          secondImageProvider: widget.secondImageProvider!,
+          loadingBuilder: widget.loadingBuilder,
+          backgroundDecoration: backgroundDecoration,
+          semanticLabel: widget.semanticLabel,
+          gaplessPlayback: widget.gaplessPlayback,
+          scaleStateChangedCallback: widget.scaleStateChangedCallback,
+          enableRotation: widget.enableRotation,
+          controller: _controller,
+          scaleStateController: _scaleStateController,
+          maxScale: widget.maxScale,
+          minScale: widget.minScale,
+          initialScale: widget.initialScale,
+          basePosition: widget.basePosition,
+          scaleStateCycle: widget.scaleStateCycle,
+          onTapUp: widget.onTapUp,
+          onTapDown: widget.onTapDown,
+          onScaleEnd: widget.onScaleEnd,
+          outerSize: computedOuterSize,
+          gestureDetectorBehavior: widget.gestureDetectorBehavior,
+          tightMode: widget.tightMode,
+          filterQuality: widget.filterQuality,
+          disableGestures: widget.disableGestures,
+          errorBuilder: widget.errorBuilder,
+          enablePanAlways: widget.enablePanAlways,
+          slidePosition: widget.slidePosition ?? 0.5,
+        );
       },
     );
   }

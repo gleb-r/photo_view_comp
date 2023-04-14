@@ -22,6 +22,7 @@ flutter:
   assets:
     - assets/neat.gif
     - assets/large-image.jpg
+    - assets/large-image2.jpg
     - assets/small-image.jpg
     - assets/gallery1.jpg
     - assets/gallery2.jpg

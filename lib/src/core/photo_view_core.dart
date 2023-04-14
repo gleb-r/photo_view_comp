@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:photo_view/photo_view.dart'
     show
@@ -23,11 +24,11 @@ const _defaultDecoration = const BoxDecoration(
 class PhotoViewCore extends StatefulWidget {
   const PhotoViewCore({
     Key? key,
-    required this.imageProvider,
+    required this.firstImageProvider,
+    required this.secondImageProvider,
     required this.backgroundDecoration,
     required this.semanticLabel,
     required this.gaplessPlayback,
-    required this.heroAttributes,
     required this.enableRotation,
     required this.onTapUp,
     required this.onTapDown,
@@ -42,40 +43,16 @@ class PhotoViewCore extends StatefulWidget {
     required this.filterQuality,
     required this.disableGestures,
     required this.enablePanAlways,
-  })  : customChild = null,
-        super(key: key);
-
-  const PhotoViewCore.customChild({
-    Key? key,
-    required this.customChild,
-    required this.backgroundDecoration,
-    this.heroAttributes,
-    required this.enableRotation,
-    this.onTapUp,
-    this.onTapDown,
-    this.onScaleEnd,
-    this.gestureDetectorBehavior,
-    required this.controller,
-    required this.scaleBoundaries,
-    required this.scaleStateCycle,
-    required this.scaleStateController,
-    required this.basePosition,
-    required this.tightMode,
-    required this.filterQuality,
-    required this.disableGestures,
-    required this.enablePanAlways,
-  })  : imageProvider = null,
-        semanticLabel = null,
-        gaplessPlayback = false,
-        super(key: key);
+    required this.slidePosition,
+  }) : super(key: key);
 
   final Decoration? backgroundDecoration;
-  final ImageProvider? imageProvider;
+  final ImageProvider? firstImageProvider;
+  final ImageProvider? secondImageProvider;
+
   final String? semanticLabel;
   final bool? gaplessPlayback;
-  final PhotoViewHeroAttributes? heroAttributes;
   final bool enableRotation;
-  final Widget? customChild;
 
   final PhotoViewControllerBase controller;
   final PhotoViewScaleStateController scaleStateController;
@@ -91,6 +68,7 @@ class PhotoViewCore extends StatefulWidget {
   final bool tightMode;
   final bool disableGestures;
   final bool enablePanAlways;
+  final double slidePosition;
 
   final FilterQuality filterQuality;
 
@@ -98,8 +76,6 @@ class PhotoViewCore extends StatefulWidget {
   State<StatefulWidget> createState() {
     return PhotoViewCoreState();
   }
-
-  bool get hasCustomChild => customChild != null;
 }
 
 class PhotoViewCoreState extends State<PhotoViewCore>
@@ -120,8 +96,6 @@ class PhotoViewCoreState extends State<PhotoViewCore>
   late final AnimationController _rotationAnimationController =
       AnimationController(vsync: this)..addListener(handleRotationAnimation);
   Animation<double>? _rotationAnimation;
-
-  PhotoViewHeroAttributes? get heroAttributes => widget.heroAttributes;
 
   late ScaleBoundaries cachedScaleBoundaries = widget.scaleBoundaries;
 
@@ -298,6 +272,7 @@ class PhotoViewCoreState extends State<PhotoViewCore>
       markNeedsScaleRecalc = true;
       cachedScaleBoundaries = widget.scaleBoundaries;
     }
+    final screenWidth = MediaQuery.of(context).size.width; // TODO: from parent constr
 
     return StreamBuilder(
         stream: controller.outputStateStream,
@@ -307,6 +282,17 @@ class PhotoViewCoreState extends State<PhotoViewCore>
           AsyncSnapshot<PhotoViewControllerValue> snapshot,
         ) {
           if (snapshot.hasData) {
+            final imageWidth = (scaleBoundaries.childSize * scale).width;
+
+            final double relativePos;
+            if (imageWidth > screenWidth) {
+              final from =
+                  (imageWidth - screenWidth) / 2 - snapshot.data!.position.dx;
+              relativePos =
+                  (from + widget.slidePosition * screenWidth) / imageWidth;
+            } else {
+              relativePos = widget.slidePosition;
+            }
             final PhotoViewControllerValue value = snapshot.data!;
             final useImageScale = widget.filterQuality != FilterQuality.none;
 
@@ -323,7 +309,7 @@ class PhotoViewCoreState extends State<PhotoViewCore>
                 basePosition,
                 useImageScale,
               ),
-              child: _buildHero(),
+              child: _buildChild(relativePos),
             );
 
             final child = Container(
@@ -364,31 +350,58 @@ class PhotoViewCoreState extends State<PhotoViewCore>
         });
   }
 
-  Widget _buildHero() {
-    return heroAttributes != null
-        ? Hero(
-            tag: heroAttributes!.tag,
-            createRectTween: heroAttributes!.createRectTween,
-            flightShuttleBuilder: heroAttributes!.flightShuttleBuilder,
-            placeholderBuilder: heroAttributes!.placeholderBuilder,
-            transitionOnUserGestures: heroAttributes!.transitionOnUserGestures,
-            child: _buildChild(),
-          )
-        : _buildChild();
-  }
-
-  Widget _buildChild() {
-    return widget.hasCustomChild
-        ? widget.customChild!
-        : Image(
-            image: widget.imageProvider!,
+  Widget _buildChild(double sliderPosition) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ClipRect(
+          clipper: _SliderClipper.inverted(position: sliderPosition),
+          child: Image(
+            image: widget.firstImageProvider!,
             semanticLabel: widget.semanticLabel,
             gaplessPlayback: widget.gaplessPlayback ?? false,
             filterQuality: widget.filterQuality,
             width: scaleBoundaries.childSize.width * scale,
             fit: BoxFit.contain,
-          );
+          ),
+        ),
+        ClipRect(
+          clipper: _SliderClipper(position: sliderPosition),
+          child: Image(
+            image: widget.secondImageProvider!,
+            semanticLabel: widget.semanticLabel,
+            gaplessPlayback: widget.gaplessPlayback ?? false,
+            filterQuality: widget.filterQuality,
+            width: scaleBoundaries.childSize.width * scale,
+            fit: BoxFit.contain,
+          ),
+        ),
+      ],
+    );
   }
+}
+
+class _SliderClipper extends CustomClipper<Rect> {
+  _SliderClipper({required this.position}) : invert = false;
+
+  _SliderClipper.inverted({required this.position}) : invert = true;
+
+  final bool invert;
+  final double position;
+
+  @override
+  Rect getClip(Size size) {
+    if (invert) {
+      final dx = position * size.width;
+      return Rect.fromLTRB(0, 0, dx, size.height);
+    } else {
+      final dx = position * size.width;
+      return Rect.fromLTRB(dx, 0, size.width, size.height);
+    }
+  }
+
+  @override
+  bool shouldReclip(_SliderClipper oldClipper) => true;
 }
 
 class _CenterWithOriginalSizeDelegate extends SingleChildLayoutDelegate {
