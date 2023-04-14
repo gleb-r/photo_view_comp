@@ -57,12 +57,12 @@ class _CommonExampleRouteWrapperState extends State<CommonExampleRouteWrapper> {
             ),
           ),
           Slider(
-            min: 0.05,
+              min: 0.05,
               max: 0.95,
               value: position,
               onChanged: (value) => setState(() {
-                    position = value;
-                  })),
+                position = value;
+              })),
         ],
       ),
     );

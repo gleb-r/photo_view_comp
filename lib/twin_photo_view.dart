@@ -1,12 +1,13 @@
 library twin_photo_view;
 
 import 'package:flutter/material.dart';
-
 import 'package:twin_photo_view/src/controller/photo_view_controller.dart';
 import 'package:twin_photo_view/src/controller/photo_view_scalestate_controller.dart';
 import 'package:twin_photo_view/src/photo_view_computed_scale.dart';
 import 'package:twin_photo_view/src/photo_view_scale_state.dart';
 import 'package:twin_photo_view/src/photo_view_wrappers.dart';
+
+export 'package:twin_photo_view/twin_photo_view.dart';
 
 export 'src/controller/photo_view_controller.dart';
 export 'src/controller/photo_view_scalestate_controller.dart';
