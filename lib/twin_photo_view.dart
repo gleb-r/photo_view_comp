@@ -500,8 +500,8 @@ class _TwinPhotoViewState extends State<TwinPhotoView>
             ),
             Positioned(
               top: computedOuterSize.height * widget.thumbOffset,
-              left: 8,
-              right: 8,
+              left: constraints.maxWidth * 0.02,
+              right: constraints.maxWidth * 0.02,
               child: FlutterSlider(
                 tooltip: FlutterSliderTooltip(disabled: true),
                 trackBar: const FlutterSliderTrackBar(
@@ -511,8 +511,8 @@ class _TwinPhotoViewState extends State<TwinPhotoView>
                 handler: FlutterSliderHandler(
                   child: widget.handler ?? const SizedBox(),
                 ),
-                min: 63,
-                max: 937,
+                min: 65,
+                max: 935,
                 values: [slidePosition * 1000],
                 onDragging: (indx, value, value2) {
                   setState(() {
@@ -520,10 +520,6 @@ class _TwinPhotoViewState extends State<TwinPhotoView>
                     print("indx: $indx v1: $value, v2: $value2");
                   });
                 },
-                // value: slidePosition,
-                // onChanged: (value) => setState(() {
-                //   slidePosition = value;
-                // }),
               ),
             ),
           ],
