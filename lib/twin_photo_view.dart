@@ -1,6 +1,7 @@
 library twin_photo_view;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_xlider/flutter_xlider.dart';
 import 'package:twin_photo_view/src/controller/photo_view_controller.dart';
 import 'package:twin_photo_view/src/controller/photo_view_scalestate_controller.dart';
 import 'package:twin_photo_view/src/photo_view_computed_scale.dart';
@@ -265,6 +266,7 @@ class TwinPhotoView extends StatefulWidget {
     this.dividerColor,
     this.dividerThickness,
     this.thumbColor,
+    this.handler,
   }) : super(key: key);
 
   /// Given a [imageProvider] it resolves into an zoomable image widget using. It
@@ -371,6 +373,8 @@ class TwinPhotoView extends StatefulWidget {
   final double? dividerThickness;
 
   final double thumbOffset;
+
+  final Widget? handler;
 
   @override
   State<StatefulWidget> createState() {
@@ -496,19 +500,32 @@ class _TwinPhotoViewState extends State<TwinPhotoView>
             ),
             Positioned(
               top: computedOuterSize.height * widget.thumbOffset,
-              left: 0,
-              right: 0,
-              child: Slider(
-                  activeColor: Colors.transparent,
-                  inactiveColor: Colors.transparent,
-                  thumbColor: widget.thumbColor ?? Colors.white,
-                  min: 0.063,
-                  max: 0.937,
-                  value: slidePosition,
-                  onChanged: (value) => setState(() {
-                        slidePosition = value;
-                      })),
-            )
+              left: 8,
+              right: 8,
+              child: FlutterSlider(
+                tooltip: FlutterSliderTooltip(disabled: true),
+                trackBar: const FlutterSliderTrackBar(
+                  activeTrackBar: BoxDecoration(color: Colors.transparent),
+                  inactiveTrackBar: BoxDecoration(color: Colors.transparent),
+                ),
+                handler: FlutterSliderHandler(
+                  child: widget.handler ?? const SizedBox(),
+                ),
+                min: 63,
+                max: 937,
+                values: [slidePosition * 1000],
+                onDragging: (indx, value, value2) {
+                  setState(() {
+                    slidePosition = value / 1000;
+                    print("indx: $indx v1: $value, v2: $value2");
+                  });
+                },
+                // value: slidePosition,
+                // onChanged: (value) => setState(() {
+                //   slidePosition = value;
+                // }),
+              ),
+            ),
           ],
         );
       },
